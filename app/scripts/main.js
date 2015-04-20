@@ -1,25 +1,31 @@
 (function(window, document) {
 
+  //reddit sections
   var sections = ['hot', 'new', 'top'];
 
+  //app state
   var params = {
     section: null,
     subreddit: window.location.hash.substr(1) || undefined,
     limit: 25
   };
 
+  //doT templates
   var templates = {
     post: doT.template(document.getElementById('posttmpl').text)
   };
 
+  //DOM nodes
   var blocks = {
     posts: document.getElementById('list'),
     menu: document.getElementById('menu'),
     sub: document.getElementById('subname')
   }
 
+  //simple cache
   var cache = {};
 
+  //observer
   Object.observe(params, function(changes) {
 
     blocks.sub.innerHTML = params.subreddit ? ('/ ' + params.subreddit) : '';
@@ -30,6 +36,7 @@
 
   });
 
+  //reflect data to DOM
   function render(raw) {
     var content = raw.data.children.map(function(post) {
       return templates.post(post.data);
@@ -37,6 +44,7 @@
     blocks.posts.innerHTML = content.join('');
   }
 
+  //get posts
   function get(limit, subreddit) {
 
     if (subreddit in cache) {
@@ -54,6 +62,7 @@
     }
   }
 
+  //unfinished
   function getComments(article, subreddit, limit) {
     var id = article + subreddit;
     if (id in cache) {
@@ -70,8 +79,7 @@
     }
   }
 
-  get(params.limit, params.subreddit);
-
+  //change section
   window.go = function(section) {
     params.section = section;
     Array.prototype.forEach.call(blocks.menu.children, function(menuItem) {
@@ -85,6 +93,7 @@
     });
   };
 
+  //reaction on URL change
   window.addEventListener('hashchange',
     function(event) {
       console.log('event ' , event);
@@ -92,6 +101,7 @@
       params.subreddit = hash || undefined;
     }, false);
 
+  //default section
   params.section = 'hot';
 
 })(window, document);
