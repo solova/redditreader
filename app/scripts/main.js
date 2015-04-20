@@ -1,4 +1,6 @@
-(function(window, document) {
+(function(window, document, Q, reddit, doT) {
+
+  "use strict";
 
   //reddit sections
   var sections = ['hot', 'new', 'top'];
@@ -20,13 +22,13 @@
     posts: document.getElementById('list'),
     menu: document.getElementById('menu'),
     sub: document.getElementById('subname')
-  }
+  };
 
   //simple cache
   var cache = {};
 
   //observer
-  Object.observe(params, function(changes) {
+  Object.observe(params, function() {
 
     blocks.sub.innerHTML = params.subreddit ? ('/ ' + params.subreddit) : '';
 
@@ -55,7 +57,7 @@
         var dfd = Q.defer();
         reddit[section](subreddit).limit(limit).fetch(function(response) {
           dfd.resolve(response);
-        })
+        });
         cache[subreddit][section] = dfd.promise;
       });
       return cache[subreddit];
@@ -73,7 +75,7 @@
       reddit.comments(article, subreddit).limit(limit).fetch(function(response) {
         console.log('response ' , response);
         dfd.resolve(response);
-      })
+      });
       cache[id] = dfd.promise;
       return dfd.promise;
     }
@@ -104,4 +106,4 @@
   //default section
   params.section = 'hot';
 
-})(window, document);
+})(window, document, window.Q, window.reddit, window.doT);
